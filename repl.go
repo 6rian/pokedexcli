@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/6rian/pokedexcli/commands"
-	"log"
+	"github.com/6rian/pokedexcli/config"
 	"os"
 )
 
@@ -12,7 +12,7 @@ func prompt() {
 	fmt.Printf("Pokedex> ")
 }
 
-func StartRepl() {
+func StartRepl(cfg *config.Config) {
 	cmds := commands.GetCommands()
 	reader := bufio.NewReader(os.Stdin)
 	scanner := bufio.NewScanner(reader)
@@ -26,9 +26,9 @@ func StartRepl() {
 
 		// Evaluate and execute command.
 		if cmd, ok := cmds[input]; ok {
-			err := cmd.Callback()
+			err := cmd.Callback(cfg)
 			if err != nil {
-				log.Fatalf("An error occurred: %v", err)
+				fmt.Printf("An error occurred: %v", err)
 			}
 		} else {
 			fmt.Printf("Oops! Unknown command. Please try again or type 'help' for usage.\n")

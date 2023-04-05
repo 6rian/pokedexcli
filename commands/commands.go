@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"github.com/6rian/pokedexcli/pokeapi"
+	"github.com/6rian/pokedexcli/config"
 	"os"
 )
 
@@ -26,7 +26,7 @@ func GetCommands() CliCommandMap {
 	}
 }
 
-func commandHelp() error {
+func commandHelp(cfg *config.Config) error {
 	fmt.Printf("\nUsage:\n\n")
 	for _, cmd := range GetCommands() {
 		fmt.Printf(" - %s: %s\n", cmd.name, cmd.description)
@@ -35,18 +35,24 @@ func commandHelp() error {
 	return nil
 }
 
-func commandExit() error {
+func commandExit(cfg *config.Config) error {
 	defer os.Exit(0)
 	fmt.Printf("Byebye!\n")
 	return nil
 }
 
-func commandMap() error {
-	pokeapi.Test()
-	pokeapiClient := pokeapi.New()
-	err := pokeapiClient.GetMap()
+func commandMap(cfg *config.Config) error {
+	results, err := cfg.PokeApiClient.FetchMap(cfg.Next)
 	if err != nil {
 		return err
 	}
+
+	cfg.Next = results.Next
+	cfg.Prev = results.Previous
+
+	for _, area := range results.Results {
+		fmt.Printf(" - %s\n", area.Name)
+	}
+
 	return nil
 }

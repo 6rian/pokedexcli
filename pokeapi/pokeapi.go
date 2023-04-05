@@ -2,13 +2,13 @@ package pokeapi
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 )
 
-type PokeApi struct {
-	client *http.Client
+type PokeApiClient struct {
+	client  *http.Client
+	baseUrl string
 }
 
 type LocationAreasResp struct {
@@ -21,30 +21,31 @@ type LocationAreasResp struct {
 	} `json:"results"`
 }
 
-func New() *PokeApi {
-	return &PokeApi{
+func New() *PokeApiClient {
+	return &PokeApiClient{
 		client: &http.Client{
 			Timeout: 10 * time.Second,
 		},
+		baseUrl: "https://pokeapi.co/api/v2/",
 	}
 }
 
-func (p *PokeApi) GetMap() error {
-	var url = "https://pokeapi.co/api/v2/location-area/"
+func (p *PokeApiClient) FetchMap(url *string) (LocationAreasResp, error) {
+	endpoint := "location-area/"
 
-	resp, err := p.client.Get(url)
+	if url == nil {
+		tempUrl := p.baseUrl + endpoint
+		url = &tempUrl
+	}
+
+	resp, err := p.client.Get(*url)
 	if err != nil {
-		return err
+		return LocationAreasResp{}, err
 	}
 
 	defer resp.Body.Close()
 
-	var target interface{}
-	json.NewDecoder(resp.Body).Decode(&target)
-	fmt.Printf("Results: \n%v\n", target)
-	return nil
-}
-
-func Test() {
-	fmt.Printf("\nrunning pokeapi.Test\n")
+	var r LocationAreasResp
+	json.NewDecoder(resp.Body).Decode(&r)
+	return r, nil
 }
