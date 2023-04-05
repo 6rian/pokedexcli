@@ -23,25 +23,11 @@ func newCliCommand(name, desc string, cb func() error) *cliCommand {
 
 var commands = make(map[string]cliCommand)
 
-func commandHelp() error {
-	fmt.Printf("\nUsage:\n\n")
-	for _, cmd := range commands {
-		fmt.Printf("%s: %s\n", cmd.name, cmd.description)
-	}
-
-	return nil
-}
-
-func commandExit() error {
-	defer os.Exit(0)
-	fmt.Printf("\nByebye!\n")
-	return nil
-}
-
 func main() {
 	// Register commands.
-	commands["help"] = *newCliCommand("help", "Displays a help message", commandHelp)
-	commands["exit"] = *newCliCommand("exit", "Exits the pokedex", commandExit)
+	commands["help"] = *newCliCommand("help", "Displays a help message", CommandHelp)
+	commands["exit"] = *newCliCommand("exit", "Exits the pokedex", CommandExit)
+	commands["map"] = *newCliCommand("map", "Displays the next 20 locations", CommandMap)
 
 	reader := bufio.NewReader(os.Stdin)
 	scanner := bufio.NewScanner(reader)
