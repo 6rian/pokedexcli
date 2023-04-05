@@ -48,7 +48,7 @@ func commandExit(cfg *config.Config) error {
 }
 
 func commandMap(cfg *config.Config) error {
-	results, err := cfg.PokeApiClient.FetchMap(cfg.Next)
+	results, err := cfg.PokeApiClient.FetchLocationAreas(cfg.Next)
 	if err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func commandMapb(cfg *config.Config) error {
 		return errors.New("you're already at the beginning, you can't go back")
 	}
 
-	results, err := cfg.PokeApiClient.FetchMap(cfg.Prev)
+	results, err := cfg.PokeApiClient.FetchLocationAreas(cfg.Prev)
 	if err != nil {
 		return err
 	}

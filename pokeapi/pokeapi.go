@@ -30,7 +30,7 @@ func New() *PokeApiClient {
 	}
 }
 
-func (p *PokeApiClient) FetchMap(url *string) (LocationAreasResp, error) {
+func (p *PokeApiClient) FetchLocationAreas(url *string) (LocationAreasResp, error) {
 	endpoint := "location-area/"
 
 	if url == nil {
