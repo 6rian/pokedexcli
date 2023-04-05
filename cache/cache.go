@@ -1,6 +1,8 @@
 package cache
 
-import "time"
+import (
+	"time"
+)
 
 type CacheEntry struct {
 	createdAt time.Time
@@ -10,7 +12,23 @@ type CacheEntry struct {
 type Cache map[string]CacheEntry
 
 func NewCache(interval time.Duration) Cache {
-	return Cache{}
+	c := Cache{}
+	c.ReapLoop(interval)
+	return c
+}
+
+func (c Cache) ReapLoop(interval time.Duration) {
+	ticker := time.NewTicker(interval)
+	go func() {
+		for {
+			<-ticker.C
+			for key := range c {
+				if time.Since(c[key].createdAt) > interval {
+					delete(c, key)
+				}
+			}
+		}
+	}()
 }
 
 func (c Cache) Add(key string, val []byte) {
