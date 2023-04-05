@@ -28,7 +28,7 @@ func StartRepl(cfg *config.Config) {
 		if cmd, ok := cmds[input]; ok {
 			err := cmd.Callback(cfg)
 			if err != nil {
-				fmt.Printf("An error occurred: %v", err)
+				fmt.Printf("[!] ERROR: %v\n", err)
 			}
 		} else {
 			fmt.Printf("Oops! Unknown command. Please try again or type 'help' for usage.\n")

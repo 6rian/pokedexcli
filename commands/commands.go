@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 	"github.com/6rian/pokedexcli/config"
 	"os"
@@ -23,6 +24,11 @@ func GetCommands() CliCommandMap {
 			description: "Displays the next 20 location areas",
 			Callback:    commandMap,
 		},
+		"mapb": {
+			name:        "mapb",
+			description: "Displays the previous 20 location areas",
+			Callback:    commandMapb,
+		},
 	}
 }
 
@@ -43,6 +49,26 @@ func commandExit(cfg *config.Config) error {
 
 func commandMap(cfg *config.Config) error {
 	results, err := cfg.PokeApiClient.FetchMap(cfg.Next)
+	if err != nil {
+		return err
+	}
+
+	cfg.Next = results.Next
+	cfg.Prev = results.Previous
+
+	for _, area := range results.Results {
+		fmt.Printf(" - %s\n", area.Name)
+	}
+
+	return nil
+}
+
+func commandMapb(cfg *config.Config) error {
+	if cfg.Prev == nil {
+		return errors.New("you're already at the beginning, you can't go back")
+	}
+
+	results, err := cfg.PokeApiClient.FetchMap(cfg.Prev)
 	if err != nil {
 		return err
 	}
