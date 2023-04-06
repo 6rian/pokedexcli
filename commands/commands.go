@@ -210,6 +210,7 @@ func commandCatch(cfg *config.Config, args CliCommandArgs) error {
 	if caught {
 		cfg.Pokedex[name] = pokemon
 		fmt.Printf("%s was caught!\n", name)
+		fmt.Printf("You may now inspect it with the inspect command.\n")
 	} else {
 		fmt.Printf("%s escaped!\n", name)
 	}
