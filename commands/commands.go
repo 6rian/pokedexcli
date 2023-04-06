@@ -43,6 +43,11 @@ func GetCommands(withDebugging bool) CliCommandMap {
 			description: "Try to catch the Pokemon",
 			Callback:    commandCatch,
 		},
+		"inspect": {
+			name:        "inspect [pokemon]",
+			description: "View all details about the Pokemon",
+			Callback:    commandInspect,
+		},
 	}
 
 	if withDebugging {
@@ -211,4 +216,34 @@ func catch(experience int) bool {
 	// Max base experience is 608
 	chance := rand.Intn(750)
 	return chance >= experience
+}
+
+func commandInspect(cfg *config.Config, args CliCommandArgs) error {
+	if len(args) != 1 {
+		return errors.New("please enter a single pokemon to inspect")
+	}
+
+	name := args[0]
+
+	p, caught := cfg.Pokedex[name]
+	if !caught {
+		fmt.Printf("You have not caught that pokemon!\n")
+		return nil
+	}
+
+	fmt.Printf("Name: %s\n", p.Name)
+	fmt.Printf("Height: %d\n", p.Height)
+	fmt.Printf("Weight: %d\n", p.Weight)
+
+	fmt.Printf("Stats:\n")
+	for _, s := range p.Stats {
+		fmt.Printf("  -%s: %d\n", s.Stat.Name, s.BaseStat)
+	}
+
+	fmt.Printf("Types:\n")
+	for _, t := range p.Types {
+		fmt.Printf("  -%s\n", t.Type.Name)
+	}
+
+	return nil
 }
