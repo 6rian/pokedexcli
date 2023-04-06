@@ -1,25 +1,11 @@
 package pokeapi
 
 import (
+	"errors"
 	"io"
 	"net/http"
 	"time"
 )
-
-type PokeApiClient struct {
-	client  *http.Client
-	baseUrl string
-}
-
-type LocationAreasResp struct {
-	Count    int     `json:"count"`
-	Next     *string `json:"next"`
-	Previous *string `json:"previous"`
-	Results  []struct {
-		Name string `json:"name"`
-		URL  string `json:"url"`
-	} `json:"results"`
-}
 
 func New() *PokeApiClient {
 	return &PokeApiClient{
@@ -30,13 +16,9 @@ func New() *PokeApiClient {
 	}
 }
 
-func (p *PokeApiClient) GetDefaultLocationAreasUrl() string {
-	return p.baseUrl + "location-area/"
-}
-
-func (p *PokeApiClient) FetchLocationAreas(url string) ([]byte, error) {
+func (p *PokeApiClient) Fetch(url string) ([]byte, error) {
 	if url == "" {
-		url = p.GetDefaultLocationAreasUrl()
+		return []byte{}, errors.New("missing URL to fetch")
 	}
 
 	resp, err := p.client.Get(url)
@@ -46,7 +28,9 @@ func (p *PokeApiClient) FetchLocationAreas(url string) ([]byte, error) {
 
 	defer resp.Body.Close()
 
-	// TODO check the response status code
+	if resp.StatusCode > 399 {
+		return []byte{}, errors.New("invalid location area")
+	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -54,4 +38,12 @@ func (p *PokeApiClient) FetchLocationAreas(url string) ([]byte, error) {
 	}
 
 	return body, nil
+}
+
+func (p *PokeApiClient) GetLocationAreasUrl() string {
+	return p.baseUrl + "location-area/"
+}
+
+func (p *PokeApiClient) GetLocationAreaUrl(name string) string {
+	return p.GetLocationAreasUrl() + name
 }

@@ -68,7 +68,7 @@ func commandExit(cfg *config.Config, args CliCommandArgs) error {
 func commandMap(cfg *config.Config, args CliCommandArgs) error {
 	var url string
 	if cfg.Next == nil {
-		url = cfg.PokeApiClient.GetDefaultLocationAreasUrl()
+		url = cfg.PokeApiClient.GetLocationAreasUrl()
 	} else {
 		url = *cfg.Next
 	}
@@ -90,7 +90,7 @@ func getMap(url string, cfg *config.Config) error {
 	resp, exists := cfg.Cache.Get(url)
 	if !exists {
 		var err error
-		resp, err = cfg.PokeApiClient.FetchLocationAreas(url)
+		resp, err = cfg.PokeApiClient.Fetch(url)
 		if err != nil {
 			return err
 		}
@@ -117,7 +117,40 @@ func getMap(url string, cfg *config.Config) error {
 }
 
 func commandExplore(cfg *config.Config, args CliCommandArgs) error {
-	fmt.Printf("Gotta catch 'em all!\n")
-	fmt.Printf("Args=%v\n", args)
+	if len(args) != 1 {
+		return errors.New("missing a valid location area")
+	}
+
+	url := cfg.PokeApiClient.GetLocationAreaUrl(args[0])
+
+	var resp []byte
+	resp, exists := cfg.Cache.Get(url)
+	if !exists {
+		var err error
+		resp, err = cfg.PokeApiClient.Fetch(url)
+		if err != nil {
+			return err
+		}
+	}
+
+	var area pokeapi.LocationAreaResp
+	err := json.Unmarshal(resp, &area)
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		cfg.Cache.Add(url, resp)
+	}
+
+	if len(area.PokemonEncounters) == 0 {
+		fmt.Printf("No Pokenmon found.\n")
+	} else {
+		fmt.Printf("Found Pokemon:\n")
+		for _, encounters := range area.PokemonEncounters {
+			fmt.Printf(" - %s\n", encounters.Pokemon.Name)
+		}
+	}
+
 	return nil
 }
