@@ -20,14 +20,11 @@ func StartRepl(cfg *config.Config) {
 	for {
 		prompt()
 
-		// Read input.
+		// Read input
 		scanner.Scan()
-		input, err := parseInput(scanner.Text())
-		if err != nil {
-			printError(err)
-		}
+		input := parseInput(scanner.Text())
 
-		// Evaluate and execute command.
+		// Evaluate and execute command
 		var cmdName string = input[0]
 		var cmdArgs commands.CliCommandArgs = input[1:]
 		if cmd, ok := cmds[cmdName]; ok {
@@ -41,14 +38,11 @@ func StartRepl(cfg *config.Config) {
 	}
 }
 
-func parseInput(input string) ([]string, error) {
+func parseInput(input string) []string {
 	input = strings.TrimSpace(input)
 	input = strings.ToLower(input)
 	slice := strings.Split(input, " ")
-	if len(slice) == 0 {
-		return []string{}, errors.New("invalid command")
-	}
-	return slice, nil
+	return slice
 }
 
 func printError(err error) {
