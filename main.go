@@ -16,6 +16,7 @@ func main() {
 
 	cfg := config.Config{
 		PokeApiClient: pokeapi.New(),
+		Pokedex:       map[string]pokeapi.Pokemon{},
 		Cache:         cache.NewCache(3 * time.Minute),
 		DebugMode:     debugFlag,
 	}

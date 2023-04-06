@@ -47,3 +47,7 @@ func (p *PokeApiClient) GetLocationAreasUrl() string {
 func (p *PokeApiClient) GetLocationAreaUrl(name string) string {
 	return p.GetLocationAreasUrl() + name
 }
+
+func (p *PokeApiClient) GetPokemonUrl(name string) string {
+	return p.baseUrl + "pokemon/" + name
+}

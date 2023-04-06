@@ -43,6 +43,7 @@ func StartRepl(cfg *config.Config) {
 
 func parseInput(input string) ([]string, error) {
 	input = strings.TrimSpace(input)
+	input = strings.ToLower(input)
 	slice := strings.Split(input, " ")
 	if len(slice) == 0 {
 		return []string{}, errors.New("invalid command")
@@ -55,5 +56,5 @@ func printError(err error) {
 }
 
 func prompt() {
-	fmt.Printf("Pokedex> ")
+	fmt.Printf("\nPokedex> ")
 }

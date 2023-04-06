@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/rand"
 	"os"
 
 	"github.com/6rian/pokedexcli/config"
@@ -36,6 +37,11 @@ func GetCommands(withDebugging bool) CliCommandMap {
 			name:        "explore [area]",
 			description: "Explore Pokemon available in the area",
 			Callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch [pokemon]",
+			description: "Try to catch the Pokemon",
+			Callback:    commandCatch,
 		},
 	}
 
@@ -118,7 +124,7 @@ func getMap(url string, cfg *config.Config) error {
 
 func commandExplore(cfg *config.Config, args CliCommandArgs) error {
 	if len(args) != 1 {
-		return errors.New("missing a valid location area")
+		return errors.New("please enter a single location area to explore")
 	}
 
 	url := cfg.PokeApiClient.GetLocationAreaUrl(args[0])
@@ -153,4 +159,57 @@ func commandExplore(cfg *config.Config, args CliCommandArgs) error {
 	}
 
 	return nil
+}
+
+func commandCatch(cfg *config.Config, args CliCommandArgs) error {
+	if len(args) != 1 {
+		return errors.New("please enter a single pokemon to catch")
+	}
+
+	name := args[0]
+	url := cfg.PokeApiClient.GetPokemonUrl(name)
+
+	// TODO: check the pokedex to see if already caught and bail early if so
+	if _, caught := cfg.Pokedex[name]; caught {
+		fmt.Printf("%s was already caught\n", name)
+		return nil
+	} else {
+		fmt.Printf("Throwing a Pokeball at %s...\n", name)
+	}
+
+	var resp []byte
+	resp, exists := cfg.Cache.Get(url)
+	if !exists {
+		var err error
+		resp, err = cfg.PokeApiClient.Fetch(url)
+		if err != nil {
+			return err
+		}
+	}
+
+	var pokemon pokeapi.Pokemon
+	err := json.Unmarshal(resp, &pokemon)
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		cfg.Cache.Add(url, resp)
+	}
+
+	caught := catch(pokemon.BaseExperience)
+	if caught {
+		cfg.Pokedex[name] = pokemon
+		fmt.Printf("%s was caught!\n", name)
+	} else {
+		fmt.Printf("%s escaped!\n", name)
+	}
+
+	return nil
+}
+
+func catch(experience int) bool {
+	// Max base experience is 608
+	chance := rand.Intn(750)
+	return chance >= experience
 }
