@@ -1,10 +1,13 @@
 package commands
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/6rian/pokedexcli/config"
 	"os"
+
+	"github.com/6rian/pokedexcli/config"
+	"github.com/6rian/pokedexcli/pokeapi"
 )
 
 func GetCommands() CliCommandMap {
@@ -48,35 +51,47 @@ func commandExit(cfg *config.Config) error {
 }
 
 func commandMap(cfg *config.Config) error {
-	results, err := cfg.PokeApiClient.FetchLocationAreas(cfg.Next)
-	if err != nil {
-		return err
+	var url string
+	if cfg.Next == nil {
+		url = cfg.PokeApiClient.GetDefaultLocationAreasUrl()
+	} else {
+		url = *cfg.Next
 	}
-
-	cfg.Next = results.Next
-	cfg.Prev = results.Previous
-
-	for _, area := range results.Results {
-		fmt.Printf(" - %s\n", area.Name)
-	}
-
-	return nil
+	return getMap(url, cfg)
 }
 
 func commandMapb(cfg *config.Config) error {
+	var url string
 	if cfg.Prev == nil {
 		return errors.New("you're already at the beginning, you can't go back")
+	} else {
+		url = *cfg.Prev
+	}
+	return getMap(url, cfg)
+}
+
+func getMap(url string, cfg *config.Config) error {
+	var resp []byte
+	resp, exists := cfg.Cache.Get(url)
+	if !exists {
+		var err error
+		resp, err = cfg.PokeApiClient.FetchLocationAreas(url)
+		if err != nil {
+			return err
+		}
 	}
 
-	results, err := cfg.PokeApiClient.FetchLocationAreas(cfg.Prev)
+	var locations pokeapi.LocationAreasResp
+	err := json.Unmarshal(resp, &locations)
 	if err != nil {
 		return err
 	}
 
-	cfg.Next = results.Next
-	cfg.Prev = results.Previous
+	cfg.Cache.Add(url, resp)
+	cfg.Next = locations.Next
+	cfg.Prev = locations.Previous
 
-	for _, area := range results.Results {
+	for _, area := range locations.Results {
 		fmt.Printf(" - %s\n", area.Name)
 	}
 

@@ -1,7 +1,7 @@
 package pokeapi
 
 import (
-	"encoding/json"
+	"io"
 	"net/http"
 	"time"
 )
@@ -30,22 +30,28 @@ func New() *PokeApiClient {
 	}
 }
 
-func (p *PokeApiClient) FetchLocationAreas(url *string) (LocationAreasResp, error) {
-	endpoint := "location-area/"
+func (p *PokeApiClient) GetDefaultLocationAreasUrl() string {
+	return p.baseUrl + "location-area/"
+}
 
-	if url == nil {
-		tempUrl := p.baseUrl + endpoint
-		url = &tempUrl
+func (p *PokeApiClient) FetchLocationAreas(url string) ([]byte, error) {
+	if url == "" {
+		url = p.GetDefaultLocationAreasUrl()
 	}
 
-	resp, err := p.client.Get(*url)
+	resp, err := p.client.Get(url)
 	if err != nil {
-		return LocationAreasResp{}, err
+		return []byte{}, err
 	}
 
 	defer resp.Body.Close()
 
-	var r LocationAreasResp
-	json.NewDecoder(resp.Body).Decode(&r)
-	return r, nil
+	// TODO check the response status code
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return body, nil
 }
