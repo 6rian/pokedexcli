@@ -102,7 +102,7 @@ func getMap(url string, cfg *config.Config) error {
 		}
 	}
 
-	var locations pokeapi.LocationAreasResp
+	var locations pokeapi.LocationAreas
 	err := json.Unmarshal(resp, &locations)
 	if err != nil {
 		return err
@@ -139,7 +139,7 @@ func commandExplore(cfg *config.Config, args CliCommandArgs) error {
 		}
 	}
 
-	var area pokeapi.LocationAreaResp
+	var area pokeapi.LocationArea
 	err := json.Unmarshal(resp, &area)
 	if err != nil {
 		return err
@@ -169,7 +169,6 @@ func commandCatch(cfg *config.Config, args CliCommandArgs) error {
 	name := args[0]
 	url := cfg.PokeApiClient.GetPokemonUrl(name)
 
-	// TODO: check the pokedex to see if already caught and bail early if so
 	if _, caught := cfg.Pokedex[name]; caught {
 		fmt.Printf("%s was already caught\n", name)
 		return nil

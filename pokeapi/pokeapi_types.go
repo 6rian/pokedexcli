@@ -7,7 +7,7 @@ type PokeApiClient struct {
 	baseUrl string
 }
 
-type LocationAreasResp struct {
+type LocationAreas struct {
 	Count    int     `json:"count"`
 	Next     *string `json:"next"`
 	Previous *string `json:"previous"`
@@ -17,7 +17,7 @@ type LocationAreasResp struct {
 	} `json:"results"`
 }
 
-type LocationAreaResp struct {
+type LocationArea struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 	// GameIndex            int    `json:"game_index"`
