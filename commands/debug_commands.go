@@ -9,7 +9,7 @@ import (
 func commandDumpCache(cfg *config.Config) error {
 	fmt.Printf("[DEBUG] Dumping the cache...\n")
 
-	for key := range cfg.Cache {
+	for key := range cfg.Cache.Entries() {
 		fmt.Printf(" - %s\n", key)
 	}
 
