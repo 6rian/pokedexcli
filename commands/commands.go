@@ -48,6 +48,11 @@ func GetCommands(withDebugging bool) CliCommandMap {
 			description: "View all details about the Pokemon",
 			Callback:    commandInspect,
 		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "List all the Pokemon in your pokedex",
+			Callback:    commandPokedex,
+		},
 	}
 
 	if withDebugging {
@@ -243,6 +248,20 @@ func commandInspect(cfg *config.Config, args CliCommandArgs) error {
 	fmt.Printf("Types:\n")
 	for _, t := range p.Types {
 		fmt.Printf("  -%s\n", t.Type.Name)
+	}
+
+	return nil
+}
+
+func commandPokedex(cfg *config.Config, args CliCommandArgs) error {
+	if len(cfg.Pokedex) == 0 {
+		fmt.Printf("Your Pokedex is empty. Go catch some Pokemon!\n")
+		return nil
+	}
+
+	fmt.Printf("Your Pokedex:\n")
+	for k := range cfg.Pokedex {
+		fmt.Printf(" - %s\n", k)
 	}
 
 	return nil
