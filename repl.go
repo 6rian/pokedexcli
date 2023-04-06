@@ -25,15 +25,16 @@ func StartRepl(cfg *config.Config) {
 		input := parseInput(scanner.Text())
 
 		// Evaluate and execute command
-		var cmdName string = input[0]
-		var cmdArgs commands.CliCommandArgs = input[1:]
-		if cmd, ok := cmds[cmdName]; ok {
-			err := cmd.Callback(cfg, cmdArgs)
+		var name string = input[0]
+		var args commands.CliCommandArgs = input[1:]
+
+		if cmd, exists := cmds[name]; exists {
+			err := cmd.Callback(cfg, args)
 			if err != nil {
 				printError(err)
 			}
 		} else {
-			printError(errors.New("Unknown command. Please try again or type 'help' for usage."))
+			printError(errors.New("unknown command. Please try again or type 'help' for usage"))
 		}
 	}
 }
