@@ -10,4 +10,5 @@ type Config struct {
 	Prev          *string
 	PokeApiClient *pokeapi.PokeApiClient
 	Cache         cache.Cache
+	DebugMode     bool
 }

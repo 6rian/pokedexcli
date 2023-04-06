@@ -3,9 +3,10 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"os"
+
 	"github.com/6rian/pokedexcli/commands"
 	"github.com/6rian/pokedexcli/config"
-	"os"
 )
 
 func prompt() {
@@ -13,7 +14,8 @@ func prompt() {
 }
 
 func StartRepl(cfg *config.Config) {
-	cmds := commands.GetCommands()
+	withDebugging := cfg.DebugMode
+	cmds := commands.GetCommands(withDebugging)
 	reader := bufio.NewReader(os.Stdin)
 	scanner := bufio.NewScanner(reader)
 

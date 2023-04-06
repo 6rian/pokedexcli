@@ -10,8 +10,8 @@ import (
 	"github.com/6rian/pokedexcli/pokeapi"
 )
 
-func GetCommands() CliCommandMap {
-	return CliCommandMap{
+func GetCommands(withDebugging bool) CliCommandMap {
+	cm := CliCommandMap{
 		"help": {
 			name:        "help",
 			description: "Displays a help message",
@@ -33,11 +33,21 @@ func GetCommands() CliCommandMap {
 			Callback:    commandMapb,
 		},
 	}
+
+	if withDebugging {
+		cm["debug.dumpCache"] = CliCommand{
+			name:        "debug.dumpCache",
+			description: "Dumps all entries in the cache",
+			Callback:    commandDumpCache,
+		}
+	}
+
+	return cm
 }
 
 func commandHelp(cfg *config.Config) error {
 	fmt.Printf("\nUsage:\n\n")
-	for _, cmd := range GetCommands() {
+	for _, cmd := range GetCommands(cfg.DebugMode) {
 		fmt.Printf(" - %s: %s\n", cmd.name, cmd.description)
 	}
 	fmt.Println("")
