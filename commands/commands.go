@@ -32,6 +32,11 @@ func GetCommands(withDebugging bool) CliCommandMap {
 			description: "Displays the previous 20 location areas",
 			Callback:    commandMapb,
 		},
+		"explore": {
+			name:        "explore [area]",
+			description: "Explore Pokemon available in the area",
+			Callback:    commandExplore,
+		},
 	}
 
 	if withDebugging {
@@ -45,7 +50,7 @@ func GetCommands(withDebugging bool) CliCommandMap {
 	return cm
 }
 
-func commandHelp(cfg *config.Config) error {
+func commandHelp(cfg *config.Config, args CliCommandArgs) error {
 	fmt.Printf("\nUsage:\n\n")
 	for _, cmd := range GetCommands(cfg.DebugMode) {
 		fmt.Printf(" - %s: %s\n", cmd.name, cmd.description)
@@ -54,13 +59,13 @@ func commandHelp(cfg *config.Config) error {
 	return nil
 }
 
-func commandExit(cfg *config.Config) error {
+func commandExit(cfg *config.Config, args CliCommandArgs) error {
 	defer os.Exit(0)
 	fmt.Printf("Byebye!\n")
 	return nil
 }
 
-func commandMap(cfg *config.Config) error {
+func commandMap(cfg *config.Config, args CliCommandArgs) error {
 	var url string
 	if cfg.Next == nil {
 		url = cfg.PokeApiClient.GetDefaultLocationAreasUrl()
@@ -70,7 +75,7 @@ func commandMap(cfg *config.Config) error {
 	return getMap(url, cfg)
 }
 
-func commandMapb(cfg *config.Config) error {
+func commandMapb(cfg *config.Config, args CliCommandArgs) error {
 	var url string
 	if cfg.Prev == nil {
 		return errors.New("you're already at the beginning, you can't go back")
@@ -108,5 +113,11 @@ func getMap(url string, cfg *config.Config) error {
 		fmt.Printf(" - %s\n", area.Name)
 	}
 
+	return nil
+}
+
+func commandExplore(cfg *config.Config, args CliCommandArgs) error {
+	fmt.Printf("Gotta catch 'em all!\n")
+	fmt.Printf("Args=%v\n", args)
 	return nil
 }
