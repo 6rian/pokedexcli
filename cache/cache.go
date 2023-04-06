@@ -32,10 +32,11 @@ func (c Cache) ReapLoop(interval time.Duration) {
 }
 
 func (c Cache) Add(key string, val []byte) {
-	// TODO: don't allow empty string as key
-	c[key] = CacheEntry{
-		createdAt: time.Now(),
-		val:       val,
+	if _, exists := c.Get(key); !exists {
+		c[key] = CacheEntry{
+			createdAt: time.Now(),
+			val:       val,
+		}
 	}
 }
 

@@ -97,7 +97,10 @@ func getMap(url string, cfg *config.Config) error {
 		return err
 	}
 
-	cfg.Cache.Add(url, resp)
+	if !exists {
+		cfg.Cache.Add(url, resp)
+	}
+
 	cfg.Next = locations.Next
 	cfg.Prev = locations.Previous
 
