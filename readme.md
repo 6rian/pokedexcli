@@ -2,6 +2,8 @@
 
 PokedexCLI is a command line REPL for interacting with [PokeApi](https://pokeapi.co/). It includes commands for navigating through locations in the Pokemon world, exploring those locations for Pokemon, and catching and inspecting Pokemon in your Pokedex.
 
+To get started, type `help` to see a list of available commands.
+
 ## Requirements
 - Go version 1.18 or higher
 
@@ -9,12 +11,11 @@ PokedexCLI is a command line REPL for interacting with [PokeApi](https://pokeapi
 
 ```bash
 # Install
-go install github.com/6rian/pokedexcli
+go install github.com/6rian/pokedexcli@latest
 
 # Run application (Assumes $GOPATH is set)
 pokedexcli
 ```
-
 
 ## Build From Source
 
