@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"sort"
 
 	"github.com/6rian/pokedexcli/config"
 	"github.com/6rian/pokedexcli/pokeapi"
@@ -67,11 +68,17 @@ func GetCommands(withDebugging bool) CliCommandMap {
 }
 
 func commandHelp(cfg *config.Config, args CliCommandArgs) error {
-	fmt.Printf("\nUsage:\n\n")
-	for _, cmd := range GetCommands(cfg.DebugMode) {
-		fmt.Printf(" - %s: %s\n", cmd.name, cmd.description)
+	commands := GetCommands(cfg.DebugMode)
+	var names []string
+	for k := range commands {
+		names = append(names, k)
 	}
-	fmt.Println("")
+	sort.Strings(names)
+
+	fmt.Printf("\nUsage:\n\n")
+	for _, v := range names {
+		fmt.Printf(" - %s: %s\n", commands[v].name, commands[v].description)
+	}
 	return nil
 }
 
